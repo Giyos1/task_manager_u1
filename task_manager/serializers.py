@@ -1,9 +1,9 @@
+from django.db.models import CharField
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from accounts.models import User
 from accounts.serializers import UserLightSerializer
-from task_manager.models import Project
+from task_manager.models import Project, Task
 
 
 # from task_manager.models import Project
@@ -53,3 +53,20 @@ class ProjectDetailSerializers(serializers.ModelSerializer):
             'description',
             'owner'
         )
+
+
+class ProjectLightSerializers(serializers.ModelSerializer):
+    owner = UserLightSerializer
+
+    class Meta:
+        model = Project
+        fields = 'name', 'description', 'owner'
+
+
+class TaskLightSerializer(serializers.ModelSerializer):
+    user = UserLightSerializer
+    project = ProjectLightSerializers
+
+    class Meta:
+        model = Task
+        fields = 'title', 'status', 'project', 'user',
