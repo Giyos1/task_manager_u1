@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 
 from task_manager.models import Project, Task
 from task_manager.serializers import ProjectListSerializer, ProjectDetailSerializers, ProjectCreateAndUpdateSerializers, \
-    TaskCreateSerializers, TaskLightSerializer, TaskUpdateSerializer, TaskPatchStatusSerializer
+    TaskCreateSerializers, TaskLightSerializer, TaskUpdateSerializer, TaskPatchStatusSerializer, ProjectLightSerializers
 
 
 class HelloAPIView(APIView):
@@ -66,11 +66,15 @@ class ProjectDetailAPIView(APIView):
         project.delete()
         return Response({"message": "Project Delete"})
 
+class ProjectListAPIView(APIView):
+    def get(self, request, pk):
+        project = Project.objects.filter(owner_id=pk)
+        return Response(ProjectLightSerializers(instance=project, many=True).data)
 
 class TaskListAPIView(APIView):
-    def get(self, request):
-        task = Task.objects.all()
-        return Response(TaskLightSerializer(task, many=True).data)
+    def get(self, request, pk):
+        task = Task.objects.filter(project_id=pk)
+        return Response(TaskLightSerializer(instance=task, many=True).data)
 
 
 class TaskDetailUpdateDeleteAPIView(APIView):
@@ -78,7 +82,7 @@ class TaskDetailUpdateDeleteAPIView(APIView):
         task = Task.objects.filter(pk=pk)
         if not task:
             return Response("Not found this task!")
-        serializer = TaskPatchStatusSerializer(task, data=request.data)
+        serializer = TaskPatchStatusSerializer(instance=task, data=request.data)
         serializer.is_valid(raise_exception=True)
         task.update(**serializer.validated_data)
         return Response("Good job!")
@@ -88,7 +92,7 @@ class TaskDetailUpdateDeleteAPIView(APIView):
         task = Task.objects.filter(pk=pk).first()
         if not task:
             return Response("Not found this task")
-        return Response(TaskLightSerializer(task).data)
+        return Response(TaskLightSerializer(instance=task).data)
 
     def put(self, request, pk):
         task = Task.objects.filter(pk=pk)
@@ -106,13 +110,6 @@ class TaskDetailUpdateDeleteAPIView(APIView):
         return Response("Your task delete!")
 
 
-
-# class TaskUpdateAPIView(APIView):
-#     def put(self, request, pk):
-#         task = Task.objects.filter(pk=pk)
-#         TaskUpdateSerializer(data=request.data).is_valid(raise_exception=True)
-#         task.update(**request.data)
-#         return Response({"message": "Good job!"}, status=201)
 
 
 class TaskCreateAPIView(APIView):
