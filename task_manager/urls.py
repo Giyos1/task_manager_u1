@@ -14,3 +14,5 @@ urlpatterns += [
     path('task/<int:pk>/', TaskDetailUpdateDeleteAPIView.as_view(), name='task'),
     # path('task/update/<int:pk>/', TaskUpdateAPIView.as_view(), name='task_update'),
 ]
+
+# change
