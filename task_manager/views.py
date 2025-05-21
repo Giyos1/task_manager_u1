@@ -86,10 +86,14 @@ class TaskDetailUpdateDeleteAPIView(APIView):
 
     def get(self, request, pk):
         task = Task.objects.filter(pk=pk).first()
+        if not task:
+            return Response("Not found this task")
         return Response(TaskLightSerializer(task).data)
 
     def put(self, request, pk):
         task = Task.objects.filter(pk=pk)
+        if not task:
+            return Response("Not found this task")
         TaskUpdateSerializer(data=request.data).is_valid(raise_exception=True)
         task.update(**request.data)
         return Response({"message": "Good job!"}, status=201)
