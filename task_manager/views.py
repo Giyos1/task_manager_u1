@@ -1,8 +1,10 @@
+from django.template.defaultfilters import title
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from task_manager.models import Project
-from task_manager.serializers import ProjectListSerializer, ProjectDetailSerializers, ProjectCreateAndUpdateSerializers
+from task_manager.models import Project, Task
+from task_manager.serializers import ProjectListSerializer, ProjectDetailSerializers, ProjectCreateAndUpdateSerializers, \
+    TaskCreateSerializers, TaskLightSerializer, TaskUpdateSerializer
 
 
 class HelloAPIView(APIView):
@@ -56,3 +58,39 @@ class ProjectDetailAPIView(APIView):
             project.save()
             return Response({"message": "ok"}, status=201)
         return Response(data=serializer.errors, status=400)
+
+
+class TaskListAPIView(APIView):
+    def get(self, request):
+        task = Task.objects.all()
+        return Response(TaskLightSerializer(task, many=True).data)
+
+
+class TaskDetailAPIView(APIView):
+    def get(self, request, pk):
+        task = Task.objects.filter(pk=pk).first()
+        return Response(TaskLightSerializer(task).data)
+
+class TaskUpdateAPIView(APIView):
+    def put(self, request, pk):
+        task = Task.objects.filter(pk=pk)
+        TaskUpdateSerializer(data=request.data).is_valid(raise_exception=True)
+        task.update(**request.data)
+        return Response({"message":"Good job!"}, status=201)
+
+
+class TaskCreateAPIView(APIView):
+    def post(self, request):
+        serializer = TaskCreateSerializers(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        Task.objects.create(**request.data)
+        return Response({"message": "Good job!"}, status=201)
+
+
+#
+# {
+# "title":"salom",
+# "status":"to_do",
+# "project":1,
+# "user":1
+# }
