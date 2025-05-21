@@ -74,7 +74,6 @@ class TaskLightSerializer(serializers.ModelSerializer):
 
 
 class TaskCreateSerializers(serializers.Serializer):
-    id = serializers.IntegerField()
     title = serializers.CharField(max_length=255)
     status = serializers.CharField(max_length=7)
     project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all())
@@ -85,3 +84,6 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = '__all__'
+
+class TaskPatchStatusSerializer(serializers.Serializer):
+    status = serializers.CharField(max_length=7)
