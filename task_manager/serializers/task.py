@@ -13,7 +13,7 @@ class TaskLightSerializer(serializers.ModelSerializer):
         fields = 'id', 'title', 'status', 'user',
 
 
-class TaskCreateSerializers(serializers.Serializer):
+class TaskSerializers(serializers.Serializer):
     title = serializers.CharField(max_length=255)
     status = serializers.CharField(max_length=7)
     project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all())

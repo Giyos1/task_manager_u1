@@ -1,6 +1,6 @@
 from task_manager.serializers.task import (
     TaskLightSerializer,
-    TaskCreateSerializers,
+    TaskSerializers,
     TaskUpdateSerializer,
     TaskPatchStatusSerializer
 )
@@ -14,12 +14,11 @@ from task_manager.serializers.project import (
 
 __all__ = (
     TaskLightSerializer,
-    TaskCreateSerializers,
+    TaskSerializers,
     TaskUpdateSerializer,
     TaskPatchStatusSerializer,
     ProjectListSerializer,
     ProjectCreateAndUpdateSerializers,
     ProjectDetailSerializers,
     ProjectLightSerializers
-
 )

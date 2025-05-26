@@ -1,6 +1,7 @@
+from rest_framework.mixins import CreateModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from rest_framework import filters, viewsets
 from task_manager.models import Project
 from task_manager.serializers import ProjectListSerializer, ProjectDetailSerializers, ProjectCreateAndUpdateSerializers, \
     ProjectLightSerializers
@@ -66,6 +67,18 @@ class ProjectDetailAPIView(APIView):
         return Response({"message": "Project Delete"})
 
 class ProjectListAPIView(APIView):
+
     def get(self, request, pk):
         project = Project.objects.filter(owner_id=pk)
         return Response(ProjectLightSerializers(instance=project, many=True).data)
+
+
+class ProjectListModelViewSet(viewsets.ModelViewSet):
+    queryset = Project.objects.all()
+    serializer_class = ProjectListSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['owner',]
+
+
+class ProjectGenericViewSet(viewsets.GenericViewSet, CreateModelMixin):
+    pass

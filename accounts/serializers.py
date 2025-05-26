@@ -1,9 +1,8 @@
-from django.contrib.auth.hashers import make_password
+from django.db import models
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from accounts.models import User
-from django.db import models
 
 
 class UserLightSerializer(serializers.ModelSerializer):
@@ -17,8 +16,28 @@ class UserLightSerializer(serializers.ModelSerializer):
 
 
 class UserCreateSerializers(serializers.Serializer):
-    email = models.EmailField()
-    username = models.CharField(max_length=100)
-    password = models.CharField(max_length=100)
+    email = serializers.EmailField()
+    username = serializers.CharField(max_length=100)
+    password = serializers.CharField(max_length=100)
+
+    def validated_data(self):
+        pass
+
+    def validate_password(self, value):
+        if len(value) <= 4:
+            raise ValidationError({"password": "4 katta bolsin"})
+        return value
+
+    def validate_email(self, value):
+        user = User.objects.filter(email=value)
+        if user:
+            raise ValidationError({"email": "Already have this email!"})
+        return value
+    def validate_username(self, value):
+        user = User.objects.filter(username=value)
+        if user:
+            raise ValidationError({"username": "Already have this username!"})
+        return value
+
 
 
