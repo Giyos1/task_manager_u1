@@ -100,33 +100,44 @@ class CheckUserSerializer(serializers.Serializer):
 
 
 class RestoreSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=150,write_only=True)
     code = serializers.CharField(max_length=6,write_only=True)
     password = serializers.CharField(max_length=100,write_only=True)
     re_password = serializers.CharField(max_length=100,write_only=True)
 
     def validate(self, attrs):
-        if attrs.get('password') != attrs.get('re_password'):
-            raise ValidationError('Password va Re_password togri kelmayapti')
+        username = attrs.get('username')
+        password = attrs.get('password')
+        re_password = attrs.get('re_password')
+        code = attrs.get('code')
+
+        if password != re_password('re_password'):
+            raise ValidationError('Passworqd va Re_password togri kelmayapti')
+
+
+        user =User.objects.filter(username=username).first()
+
+        if not user:
+            raise ValidationError('bunday user mavjud emas')
+        attrs['user'] = user
+
+        cod_obj = Code.objects.filter(code=code).first()
+
+        if not cod_obj:
+            raise ValidationError('Bunday code mavjud emas')
+
+        if cod_obj.exp_date < timezone.now():
+            raise ValidationError('Boshqatdan yuboring')
         return attrs
 
 
-    def validate_code(self,value):
-       code = Code.objects.filter(code=value).first()
-       if not code:
-           raise ValidationError('Bunday code mavjud emas')
-
-       if code.exp_date < timezone.now():
-           raise ValidationError('Code ning vaqti otb ketdi qaytadan yuboring')
-       user = code.objects.get('user')
-       value['user']=user
-       return value
 
 
-    def save(self, attrs):
-        user = attrs.get('user')
-        user.set_password(attrs.get('password'))
+    def save(self):
+        user = self.validated_data['user']
+        password = self.validated_data['password']
+        user.set_password(password)
         user.save()
-        return user
 
 
 
