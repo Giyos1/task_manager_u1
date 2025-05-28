@@ -111,7 +111,7 @@ class RestoreSerializer(serializers.Serializer):
         re_password = attrs.get('re_password')
         code = attrs.get('code')
 
-        if password != re_password('re_password'):
+        if password != re_password:
             raise ValidationError('Passworqd va Re_password togri kelmayapti')
 
 
