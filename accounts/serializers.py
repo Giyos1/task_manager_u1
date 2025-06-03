@@ -1,10 +1,8 @@
 from django.utils import timezone
-
 from django.contrib.auth import authenticate
-from pyexpat.errors import messages
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from accounts.models import User
+from accounts.models import User, exp_time_now
 from accounts.models import Code
 from accounts.service import send_email
 
@@ -81,7 +79,6 @@ class CheckUserSerializer(serializers.Serializer):
         user=User.objects.filter(email=email).first()
         if not user:
             raise ValidationError('Bunday email mavjud emas')
-        print(attrs)
         attrs['user'] = user
         return attrs
 
@@ -119,15 +116,15 @@ class RestoreSerializer(serializers.Serializer):
 
         if not user:
             raise ValidationError('bunday user mavjud emas')
-        attrs['user'] = user
 
-        cod_obj = Code.objects.filter(code=code).first()
 
+        cod_obj = Code.objects.filter(code=code,
+                                      user=user,
+                                      exp_date__gt=timezone.now()).first()
         if not cod_obj:
-            raise ValidationError('Bunday code mavjud emas')
+            raise ValidationError('Code notogri yoki eskirgan')
 
-        if cod_obj.exp_date < timezone.now():
-            raise ValidationError('Boshqatdan yuboring')
+        attrs['user'] = user
         return attrs
 
 

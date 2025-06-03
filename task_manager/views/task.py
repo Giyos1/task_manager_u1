@@ -1,10 +1,10 @@
-from django.template.context_processors import request
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ViewSet, GenericViewSet
-
 from task_manager.models import Task
 from task_manager.serializers import TaskListSerializers, TaskCreateAndUpdateSerializers, TaskDetailSerializers
 from django.contrib.postgres.search import TrigramSimilarity
@@ -55,11 +55,14 @@ class CustomPagination(PageNumberPagination):
 class TaskViewSet(ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskCreateAndUpdateSerializers
+
     filter_backends = [
         filters.SearchFilter,
         DjangoFilterBackend,
         filters.OrderingFilter
     ]
+    permission_classes = [IsAuthenticated]
+
     search_fields = ['title']
     filterset_fields = ['status', 'project']
     ordering_fields = ['created_at']

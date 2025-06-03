@@ -3,10 +3,20 @@ from datetime import timedelta
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from rest_framework.authtoken.models import Token
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
-    pass
+
+    @property
+    def token(self):
+        try:
+            token = Token.objects.get(user=self)
+        except Token.DoesNotExist:
+            token = Token.objects.create(user=self)
+        return token.key
+
+
 
 
 def generic_code():
