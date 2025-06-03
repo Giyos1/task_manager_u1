@@ -7,7 +7,7 @@ from rest_framework.viewsets import GenericViewSet
 from accounts.models import User
 from accounts.serializers import UserRegisterSerializer, LoginSerializer, UserLightSerializer, CheckUserSerializer, \
     RestoreSerializer
-from accounts.service import create_token
+from accounts.service import create_token, refresh_token
 
 
 class UserViewSet(GenericViewSet,CreateModelMixin):
@@ -44,6 +44,20 @@ class UserViewSet(GenericViewSet,CreateModelMixin):
         user = serializer.validated_data.get('user')
         token = create_token(user.id)
         return Response(token)
+
+
+    @action(methods=['post'],detail=False)
+    def refresh_access_token(self,request):
+        refresh = request.data.get('refresh')
+        if not refresh:
+            return Response({'error':'Refresh token is required'}, status=400)
+        result = refresh_token(refresh)
+        if 'error' in result:
+            return Response(result,status=401)
+        return Response(result)
+
+
+
 
 
 

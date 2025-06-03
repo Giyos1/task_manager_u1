@@ -24,7 +24,8 @@ def create_token(user_id):
 
     access = jwt.encode(access_payload,access_secret,algorithm='HS256')
     refresh = jwt.encode(refresh_payload,access_secret,algorithm='HS256')
-    return access,refresh
+    return {'access':access,
+            'refresh':refresh}
 
 
 if __name__ == '__main__':
