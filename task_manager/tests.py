@@ -54,8 +54,8 @@ class ProjectTaskModelTest(TestCase):
 
             self.client.login(username='Abdulla',password='1997')
 
-            self.project_url = reverse('project-list')
-            self.task_url = reverse('task-list')
+            self.project_url = reverse('project')
+            self.task_url = reverse('task')
 
             self.project_data = {
                 'name':'Test project',
