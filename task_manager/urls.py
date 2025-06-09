@@ -6,7 +6,7 @@ router = DefaultRouter()
 router.register(
     'task', views.TaskViewSet, basename='task'
 )
-router.register('project-viewset', views.ProjectViewSet, basename='project')
+router.register('project', views.ProjectViewSet, basename='project')
 
 urlpatterns = [
                   path('', views.HelloAPIView.as_view(), name='hello'),

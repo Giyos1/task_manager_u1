@@ -1,4 +1,6 @@
 from django.db import models
+from rest_framework.views import APIView
+
 from accounts.models import User
 from task_manager.models.project import Project
 
@@ -8,6 +10,8 @@ class StatusChoice(models.TextChoices):
     PROCESS = 'process', 'Process'
     TEST = 'test', 'Test'
     DONE = 'done', 'Done'
+
+
 
 
 class Task(models.Model):
