@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ViewSet, GenericViewSet
 
 from task_manager.models import Task
@@ -10,6 +11,8 @@ from task_manager.serializers import TaskListSerializers, TaskCreateAndUpdateSer
 from django.contrib.postgres.search import TrigramSimilarity
 from rest_framework import filters
 from rest_framework.permissions import IsAuthenticated
+
+from task_manager.tasks import export_model_to_exel
 
 
 # class TaskViewSet(ViewSet):
@@ -74,6 +77,20 @@ class TaskViewSet(ModelViewSet):
         elif self.action == 'retrieve':
             return TaskDetailSerializers
         return self.serializer_class
+
+
+class ExportExelView(APIView):
+    def post(self,request):
+        task = export_model_to_exel.delay()
+        return Response({"task":task.id,"status":"export task started"})
+
+
+
+
+
+
+
+
 
     # def get_queryset(self):
     #     param = self.request.query_params.get('search')
