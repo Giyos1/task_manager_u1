@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # local apps
     'accounts',
     'task_manager',
+    'notification',
 
     # 3 rd
     'rest_framework',
@@ -50,6 +51,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_filters',
     'drf_yasg',
+    'django_celery_beat',
+
 ]
 
 MIDDLEWARE = [
@@ -171,6 +174,10 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 1800
 
 CELERY_TIMEZONE = 'Asia/Tashkent'
+
+CELERY_BEAT_SCHEDULER ='django_celery_beat.schedulers.DatabaseScheduler'
+
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

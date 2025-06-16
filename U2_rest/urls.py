@@ -26,6 +26,8 @@ urlpatterns = [
             [
                 path('task/', include('task_manager.urls')),
                 path('accounts/', include('accounts.urls')),
+                path('notification/', include('notification.urls')),
+
             ]
         )
     )
