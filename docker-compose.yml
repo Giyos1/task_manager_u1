@@ -1,0 +1,86 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    command: daphne -b 0.0.0.0 -p 8000 U2_rest.asgi:application
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - backend
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "1154:5432"
+    networks:
+      - backend
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "1289:6379"
+    networks:
+      - backend
+
+  celery:
+    build: .
+    command: celery -A U2_rest worker --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - backend
+
+  celery-beat:
+    build: .
+    command: celery -A U2_rest beat --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - backend
+
+#  nginx:
+#    image: nginx:latest
+#    ports:
+#      - "80:80"
+#    volumes:
+#      - ./nginx:/etc/nginx/conf.d
+#      - static_volume:/app/static
+#      - media_volume:/app/media
+#    depends_on:
+#      - web
+#    networks:
+#      - backend
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+
+networks:
+  backend:
