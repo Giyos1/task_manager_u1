@@ -11,7 +11,7 @@ COPY . /app
 RUN pip install --upgrade pip && pip install -r requirment.txt
 
 # Statik fayllarni tayyorlash (agar kerak bo‘lsa)
-RUN python manage.py collectstatic
+RUN /bin/sh -c python manage.py collectstatic
 
 # Port ochish (optional)
 EXPOSE 8000
