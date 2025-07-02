@@ -45,7 +45,6 @@ jobs:
       REDIS_PORT: 6379
       CELERY_BROKER_URL: redis://localhost:6379/0
       CELERY_RESULT_BACKEND: redis://localhost:6379/0
-      KEY: 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
 
     steps:
       - uses: actions/checkout@v2
