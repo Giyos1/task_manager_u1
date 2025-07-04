@@ -1,0 +1,80 @@
+services:
+  web:
+    build: .
+    entrypoint: /app/entrypoint.sh
+    command: [ "daphne", "-b", "0.0.0.0", "-p", "8000", "U2_rest.asgi:application" ]
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - backend
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5435:5432"
+    networks:
+      - backend
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+
+  celery:
+    build: .
+
+    # O'zgartirish: entrypoint.sh orqali ishga tushirish
+    command: [ "celery", "-A", "U2_rest", "worker", "--loglevel=info" ]
+    entrypoint: /app/entrypoint.sh
+
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+    networks:
+      - backend
+
+  celery-beat:
+    build: .
+
+    # O'zgartirish: entrypoint.sh orqali ishga tushirish
+    command: [ "celery", "-A", "U2_rest", "beat", "--loglevel=info" ]
+    entrypoint: /app/entrypoint.sh
+
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+
+networks:
+  backend:

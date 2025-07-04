@@ -2,6 +2,10 @@
 
 FROM python:3.11-slim
 
+# To‘g‘ri netcat versiyasini o‘rnatish
+RUN apt-get update && apt-get install -y netcat-openbsd && apt-get clean
+
+
 
 # Ishchi papkani o‘rnatish
 
@@ -17,14 +21,7 @@ COPY . /app
 
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-
-# Statik fayllarni tayyorlash (agar kerak bo‘lsa)
-# Port ochish (optional)
-
 EXPOSE 8000
 
-
-# Container ishga tushganda Django serverni ishga tushiramiz
-
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
