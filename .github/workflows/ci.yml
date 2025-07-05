@@ -1,99 +1,62 @@
 name: CI
 
-
 on:
-
-    push:
-
-        branches: [ ci/cd ]
-
-    pull_request:
-
-        branches: [ main ]
+  push:
+    branches: [ci/cd]
+  pull_request:
+    branches: [main]
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
 
-    build:
-
-        runs-on: ubuntu-latest
-
-        services:
-
-            postgres:
-
-                image: postgres:14
-
-                env:
-
-                    POSTGRES_DB: test_db
-
-                    POSTGRES_USER: task_user
-
-                    POSTGRES_PASSWORD: test_password
-
-                ports:
-
-                    - 5432:5432
-
-                options: >-
-
-                    --health-cmd pg_isready
-
-                    --health-interval 10s
-
-                    --health-timeout 5s
-
-                    --health-retries 5
-
+    services:
+      postgres:
+        image: postgres:14
         env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: task_user
+          POSTGRES_PASSWORD: 1996
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd=pg_isready
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
-            SECRET_KEY: test
+      redis:
+        image: redis:6
+        ports:
+          - 6379:6379
 
-            DEBUG: True
+    env:
+      SECRET_KEY: test
+      DEBUG: True
+      DB_NAME: test_db
+      DB_USER: task_user
+      DB_PASSWORD: 1996
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      KEY: 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
 
-            DB_NAME: test_db
+    steps:
+      - uses: actions/checkout@v2
 
-            DB_USER: taskuser
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
 
-            DB_PASSWORD: test_password
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-            DB_HOST: localhost
-
-            DB_PORT: 5432
-
-            REDIS_HOST: redis://localhost
-
-            REDIS_PORT: 6379
-
-            CELERY_BROKER_URL: redis://localhost:6379/0
-
-            CELERY_RESULT_BACKEND: redis://localhost:6379/0
-
-            KEY: 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
-
-
-        steps:
-
-            - uses: actions/checkout@v2
-
-            - name: Set up Python
-
-              uses: actions/setup-python@v2
-
-              with:
-
-                  python-version: 3.11
-
-            - name: Install dependencies
-
-              run: |
-
-                  python -m pip install --upgrade pip
-
-                  pip install -r requirment.txt
-
-            - name: Run tests
-
-              run: |
-
-                  python manage.py test
+      - name: Run tests
+        run: |
+          python manage.py test
