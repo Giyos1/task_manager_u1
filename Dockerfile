@@ -21,7 +21,7 @@ COPY . /app
 
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-Run python manage.py collectstatic
+Run /bin/sh -c python manage.py collectstatic
 
 EXPOSE 8000
 
