@@ -21,6 +21,8 @@ COPY . /app
 
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
+Run python manage.py collectstatic
+
 EXPOSE 8000
 
 COPY entrypoint.sh /app/entrypoint.sh
