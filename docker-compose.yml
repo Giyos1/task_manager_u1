@@ -64,18 +64,18 @@ services:
     networks:
       - backend
 
-#  nginx:
-#    image: nginx:latest
-#    ports:
-#      - "80:80"
-#    volumes:
-#      - ./nginx:/etc/nginx/conf.d
-#      - static_volume:/app/static
-#      - media_volume:/app/media
-#    depends_on:
-#      - web
-#    networks:
-#      - backend
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - web
+    networks:
+      - backend
 
 volumes:
   postgres_data:
